@@ -7,7 +7,7 @@ Features
 •	Diet Suggestions – Provides personalized diet recommendations based on BMI.
 •	How to Use: 
 1.	Enter your height & weight to calculate BMI.
-2.	Receive health insights and diet tips based on your BMI category./n
+2.	Receive health insights and diet tips based on your BMI category.\n
 🖼️ Photo Editing
 •	Upload Image: Select an image file from the device.
 •	Open Camera & Capture: Access the device camera to take a photo.
