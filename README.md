@@ -1,74 +1,57 @@
-# FitPixAI
-FitPix AI is an all-in-one smart tool that combines BMI calculation, diet recommendations, and advanced photo editing features like enhancement, background removal, and upscaling.
+FitPix AI: Photo Editor & BMI Calculator
+Overview
+FitPix AI is an all-in-one smart tool that combines BMI calculation, diet recommendations, and advanced photo editing features like enhancement, background removal, and compression.
 Features
-
 🏋 Health & Fitness
-
-BMI Calculator – Computes Body Mass Index based on height and weight.
-
-Diet Suggestions – Provides personalized diet recommendations based on BMI.
-
-
-🖼 Photo Editing
-
-Enhance – Improves image quality and clarity using AI.
-
-Upscale – Increases image resolution while maintaining sharpness.
-
-Remove Background – Removes image backgrounds instantly using an API.
-
-
+•	BMI Calculator – Computes Body Mass Index based on height and weight.
+•	Diet Suggestions – Provides personalized diet recommendations based on BMI.
+•	How to Use: 
+1.	Enter your height & weight to calculate BMI.
+2.	Receive health insights and diet tips based on your BMI category.
+🖼️ Photo Editing
+•	Upload Image: Select an image file from the device.
+•	Open Camera & Capture: Access the device camera to take a photo.
+•	Editing Effects: 
+o	Enhance: Improve image quality.
+o	B&W: Convert the image to black and white.
+o	Red Grayscale: Apply a red-tinted grayscale effect.
+o	Remove Background: Remove the image background using an API.
+•	Image Compression: Reduce image file size while maintaining quality.
+•	Format Selection: Save edited images in JPEG, JPG, PNG, or HEIC format.
+•	Download Processed Images: Save edited or compressed images to the device.
 Technologies Used
+•	HTML, CSS, JavaScript: Frontend structure and interactivity.
+•	Bootstrap: Responsive and styled UI components.
+•	Canvas API: Image processing and manipulation.
+•	JavaScript Fetch API: Calls external services for background removal.
+How to Use
+BMI & Diet Features
+1.	Enter height and weight to calculate BMI.
+2.	View BMI classification and personalized diet suggestions.
+Photo Editing Features
+1.	Upload or Capture an Image 
+o	Click "Upload Image" to select a file.
+o	Click "Open Camera" to capture a photo.
+2.	Apply Effects 
+o	Choose from available editing effects.
+o	The modified image will be displayed.
+3.	Compress Image 
+o	Click "Reduce Size" to compress the image.
+o	File size in KB and MB will be displayed.
+4.	Select Format & Download 
+o	Choose a format (JPEG, PNG, HEIC, etc.).
+o	Click "Download" to save the final image.
+API Integration
+•	The Remove Background feature uses the Remove.bg API.
+•	Ensure to provide a valid API key for the service to function.
+Future Improvements
+•	Add more advanced filters and AI-based enhancements.
+•	Improve compression efficiency with more options.
+•	Implement drag-and-drop image upload support.
+•	Enhance the BMI calculator with more health insights.
+Author
+Developed by [ALUVALA EDIGA HARSHA VARDHAN GOUD].
+________________________________________
+Notes
+Ensure that your API key is correctly configured for background removal to work. For large images, processing may take a few seconds.
 
-Frontend: HTML, CSS, JavaScript, Bootstrap
-
-APIs:
-
-Remove BG API (for background removal)
-
-ImageEnhance (Python) (for enhancement)
-
-AsyncClient (for async upscaling)
-
-Installation & Setup
-
-1. Clone the repository:
-
-git clone https://github.com/Aluval/FitPixAI.git
-cd FitPixAI
-
-
-2. Install dependencies (if backend required):
-
-pip install -r requirements.txt  # For Python-based image processing
-
-
-3. Run the application:
-
-Open index.html in a browser
-
-For backend services, start the server accordingly
-
-
-
-
-Usage
-
-1. Enter your height & weight to calculate BMI and get diet tips.
-
-
-2. Upload a photo for enhancement, upscaling, or background removal.
-
-
-3. Download the processed image instantly.
-
-Contributors
-
-Your Name (Developer)
-
-Additional contributors can be listed here.
-
-
-License
-
-This project is licensed under the MIT License.
