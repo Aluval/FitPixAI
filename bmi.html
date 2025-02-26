@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff758c;
+            border: none;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 3;
+        }
+        .back-btn:hover {
+            background: #ff5e78;
+        }
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -50px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: rise 10s infinite ease-in;
+        }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <div class="bubbles"></div>
+
+    <div class="container text-center">
+        <h1 class="text-primary">BMI Calculator</h1>
+        <input type="number" id="weight" class="form-control mb-2" placeholder="Enter weight (kg)">
+        <input type="number" id="height" class="form-control mb-2" placeholder="Enter height (m)" step="0.01">
+        <button class="btn btn-success w-100" onclick="calculateBMI()">Calculate BMI</button>
+        <div id="result" class="mt-3"></div>
+        <canvas id="bmiChart"></canvas>
+        <div id="dietChart" class="mt-4 p-3 bg-light border rounded"></div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById("weight").value);
+            const height = parseFloat(document.getElementById("height").value);
+
+            if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
+                alert("Please enter valid values.");
+                return;
+            }
+
+            const bmi = weight / (height * height);
+            let classification = "";
+            let diet = "";
+
+            if (bmi < 18.5) {
+                classification = "Underweight";
+                diet = "Eat protein-rich foods, nuts, dairy, and whole grains.";
+            } else if (bmi < 25) {
+                classification = "Normal";
+                diet = "Maintain a balanced diet with fruits, vegetables, and lean proteins.";
+            } else if (bmi < 30) {
+                classification = "Overweight";
+                diet = "Reduce sugar intake, eat fiber-rich foods, and exercise regularly.";
+            } else {
+                classification = "Obese";
+                diet = "Follow a strict diet plan with low carbs, high fiber, and exercise.";
+            }
+
+            document.getElementById("result").innerHTML = `<p><strong>BMI: ${bmi.toFixed(2)}</strong> - ${classification}</p>`;
+            document.getElementById("dietChart").innerHTML = `<h4>Diet Tips:</h4><p>${diet}</p>`;
+
+            updateChart(bmi);
+        }
+
+        function updateChart(bmi) {
+            const ctx = document.getElementById('bmiChart').getContext('2d');
+
+            if (window.bmiChartInstance) {
+                window.bmiChartInstance.destroy();
+            }
+
+            window.bmiChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Underweight', 'Normal', 'Overweight', 'Obese'],
+                    datasets: [{
+                        data: [18.5, 24.9, 29.9, bmi],
+                        backgroundColor: ['blue', 'green', 'yellow', 'red']
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const bubbleContainer = document.querySelector(".bubbles");
+            for (let i = 0; i < 15; i++) {
+                let bubble = document.createElement("div");
+                bubble.classList.add("bubble");
+                let size = Math.random() * 50 + 10 + "px";
+                bubble.style.width = size;
+                bubble.style.height = size;
+                bubble.style.left = Math.random() * 100 + "%";
+                bubble.style.animationDuration = Math.random() * 5 + 5 + "s";
+                bubbleContainer.appendChild(bubble);
+            }
+        });
+    </script>
+
+</body>
+</html>
+
