@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #121212;
+      background: #0d0d0d;
       color: #fff;
       text-align: center;
       padding: 2rem;
@@ -18,11 +18,11 @@
       color: #00ffd5;
     }
     .button {
-      background: #1f1f1f;
+      background: #1a1a1a;
       border: 1px solid #00ffd5;
       color: #00ffd5;
-      padding: 0.7rem 1.5rem;
-      margin: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      margin: 0.3rem;
       border-radius: 10px;
       cursor: pointer;
       transition: 0.3s;
@@ -37,50 +37,61 @@
       border: 2px solid #00ffd5;
       border-radius: 10px;
     }
-    #downloadBtn {
-      margin-top: 1rem;
-      background: #00ffd5;
-      color: #000;
-    }
-    #tools {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    input[type="file"] {
-      margin: 1rem auto;
+    input[type="file"], input[type="number"], select {
+      margin: 0.5rem;
+      padding: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid #00ffd5;
+      background: #121212;
+      color: #fff;
     }
     video {
       display: none;
       border-radius: 10px;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <h1>FitPix AI - Photo Tools</h1>
+
   <input type="file" accept="image/*,.heic" id="uploadInput"/>
-  <br/>
   <button class="button" onclick="startCamera()">Use Camera</button>
   <video id="camera" width="320" height="240" autoplay></video>
   <button class="button" onclick="captureFromCamera()">Capture</button>
-  <br/>
+
+  <div>
+    <h3>Resize Image</h3>
+    Width: <input type="number" id="resizeWidth" placeholder="e.g. 800" />
+    Height: <input type="number" id="resizeHeight" placeholder="e.g. 600" />
+    <button class="button" onclick="resizeImage()">Resize</button>
+  </div>
+
+  <div>
+    <h3>Select Format</h3>
+    <select id="formatSelect">
+      <option value="image/jpeg">JPG</option>
+      <option value="image/png">PNG</option>
+      <option value="image/heic">HEIC</option>
+    </select>
+  </div>
+
   <div id="tools">
     <button class="button" onclick="applyEffect('enhance')">Enhance</button>
     <button class="button" onclick="applyEffect('bw')">B&W</button>
     <button class="button" onclick="applyEffect('red')">Red Grayscale</button>
     <button class="button" onclick="removeBackground()">Remove BG</button>
-    <button class="button" onclick="resizeImage()">Resize</button>
     <button class="button" onclick="applyEffect('teal')">Teal & Orange</button>
-    <button class="button" onclick="applyEffect('moody')">Moody Dark Green</button>
+    <button class="button" onclick="applyEffect('moody')">Moody Green</button>
     <button class="button" onclick="applyEffect('sepia')">Sepia</button>
     <button class="button" onclick="applyEffect('noir')">Neo-Noir</button>
     <button class="button" onclick="applyEffect('warm')">Warm Glow</button>
     <button class="button" onclick="applyEffect('cyberpunk')">Cyberpunk</button>
   </div>
+
   <canvas id="canvas" width="800" height="600"></canvas>
   <br/>
-  <button id="downloadBtn" class="button" onclick="downloadImage()">Download</button>
+  <button class="button" onclick="downloadImage()">Download</button>
 
   <script>
     const canvas = document.getElementById('canvas');
@@ -113,7 +124,6 @@
     function applyEffect(type) {
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = imgData.data;
-
       for (let i = 0; i < d.length; i += 4) {
         let r = d[i], g = d[i + 1], b = d[i + 2];
 
@@ -123,7 +133,7 @@
           case 'red': let gray = (r + g + b) / 3; d[i] = gray; d[i + 1] = d[i + 2] = 0; break;
           case 'teal': d[i] = r * 1.1; d[i + 1] = g * 0.9; d[i + 2] = b * 1.2; break;
           case 'moody': d[i] *= 0.7; d[i + 1] *= 1.1; d[i + 2] *= 0.7; break;
-          case 'sepia': let gSepia = 0.3 * r + 0.59 * g + 0.11 * b; d[i] = gSepia * 1.07; d[i + 1] = gSepia * 0.74; d[i + 2] = gSepia * 0.43; break;
+          case 'sepia': let s = 0.3 * r + 0.59 * g + 0.11 * b; d[i] = s * 1.07; d[i + 1] = s * 0.74; d[i + 2] = s * 0.43; break;
           case 'noir': let contrast = (r + g + b) / 3 > 128 ? 255 : 0; d[i] = d[i + 1] = d[i + 2] = contrast; break;
           case 'warm': d[i] += 30; d[i + 1] += 15; break;
           case 'cyberpunk': d[i] = b; d[i + 1] = r; d[i + 2] = g; break;
@@ -133,22 +143,35 @@
     }
 
     function removeBackground() {
-      alert("Use Remove.bg API or integrate custom model here.");
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i] > 240 && d[i + 1] > 240 && d[i + 2] > 240) {
+          d[i + 3] = 0; // Make near-white pixels transparent
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
     }
 
     function resizeImage() {
+      const w = parseInt(document.getElementById("resizeWidth").value);
+      const h = parseInt(document.getElementById("resizeHeight").value);
+      if (!w || !h) return alert("Enter both width and height");
+
       const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = 400;
-      tempCanvas.height = 300;
-      tempCanvas.getContext('2d').drawImage(canvas, 0, 0, 400, 300);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      tempCanvas.width = w;
+      tempCanvas.height = h;
+      tempCanvas.getContext('2d').drawImage(canvas, 0, 0, w, h);
+      canvas.width = w;
+      canvas.height = h;
       ctx.drawImage(tempCanvas, 0, 0);
     }
 
     function downloadImage() {
+      const format = document.getElementById('formatSelect').value;
       const link = document.createElement('a');
-      link.download = 'fitpix_output.jpg';
-      link.href = canvas.toDataURL('image/jpeg');
+      link.download = `fitpix_output.${format.split('/')[1]}`;
+      link.href = canvas.toDataURL(format);
       link.click();
     }
   </script>
