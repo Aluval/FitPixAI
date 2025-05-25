@@ -1,179 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FitPix AI - Photo Tools</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d0d0d;
-      color: #fff;
-      text-align: center;
-      padding: 2rem;
-    }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-      color: #00ffd5;
-    }
-    .button {
-      background: #1a1a1a;
-      border: 1px solid #00ffd5;
-      color: #00ffd5;
-      padding: 0.6rem 1.2rem;
-      margin: 0.3rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .button:hover {
-      background: #00ffd5;
-      color: #000;
-    }
-    canvas {
-      margin-top: 1rem;
-      max-width: 100%;
-      border: 2px solid #00ffd5;
-      border-radius: 10px;
-    }
-    input[type="file"], input[type="number"], select {
-      margin: 0.5rem;
-      padding: 0.4rem;
-      border-radius: 8px;
-      border: 1px solid #00ffd5;
-      background: #121212;
-      color: #fff;
-    }
-    video {
-      display: none;
-      border-radius: 10px;
-      margin-top: 1rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitPix AI - Photo Tools</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        #imagePreview {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+            display: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-  <h1>FitPix AI - Photo Tools</h1>
 
-  <input type="file" accept="image/*,.heic" id="uploadInput"/>
-  <button class="button" onclick="startCamera()">Use Camera</button>
-  <video id="camera" width="320" height="240" autoplay></video>
-  <button class="button" onclick="captureFromCamera()">Capture</button>
+<div class="container">
+    <h1>FitPix AI - Photo Tools</h1>
 
-  <div>
-    <h3>Resize Image</h3>
-    Width: <input type="number" id="resizeWidth" placeholder="e.g. 800" />
-    Height: <input type="number" id="resizeHeight" placeholder="e.g. 600" />
-    <button class="button" onclick="resizeImage()">Resize</button>
-  </div>
+    <!-- Image Upload -->
+    <input type="file" id="photoUpload" accept="image/*" />
+    
+    <br>
+    
+    <!-- Display Image and Effects -->
+    <img id="imagePreview" src="" alt="Preview" />
+    
+    <!-- Buttons for Effects -->
+    <button onclick="enhanceImage()">Enhance</button>
+    <button onclick="removeBg()">Remove Background</button>
+    <button onclick="applyB&W()">B&W</button>
+    <button onclick="applyRedGrayscale()">Red Grayscale</button>
+    <button onclick="applyResize()">Resize</button>
 
-  <div>
-    <h3>Select Format</h3>
-    <select id="formatSelect">
-      <option value="image/jpeg">JPG</option>
-      <option value="image/png">PNG</option>
-      <option value="image/heic">HEIC</option>
-    </select>
-  </div>
+    <!-- Download Button -->
+    <div id="downloadBtnContainer"></div>
 
-  <div id="tools">
-    <button class="button" onclick="applyEffect('enhance')">Enhance</button>
-    <button class="button" onclick="applyEffect('bw')">B&W</button>
-    <button class="button" onclick="applyEffect('red')">Red Grayscale</button>
-    <button class="button" onclick="removeBackground()">Remove BG</button>
-    <button class="button" onclick="applyEffect('teal')">Teal & Orange</button>
-    <button class="button" onclick="applyEffect('moody')">Moody Green</button>
-    <button class="button" onclick="applyEffect('sepia')">Sepia</button>
-    <button class="button" onclick="applyEffect('noir')">Neo-Noir</button>
-    <button class="button" onclick="applyEffect('warm')">Warm Glow</button>
-    <button class="button" onclick="applyEffect('cyberpunk')">Cyberpunk</button>
-  </div>
+    <!-- Effects Options -->
+    <div id="resizeOptions" style="display:none;">
+        <label for="widthInput">Width:</label>
+        <input type="number" id="widthInput" placeholder="Enter width" />
+        <label for="heightInput">Height:</label>
+        <input type="number" id="heightInput" placeholder="Enter height" />
+        <button onclick="applyResize()">Apply Resize</button>
+    </div>
+</div>
 
-  <canvas id="canvas" width="800" height="600"></canvas>
-  <br/>
-  <button class="button" onclick="downloadImage()">Download</button>
-
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const uploadInput = document.getElementById('uploadInput');
-    const video = document.getElementById('camera');
-
-    uploadInput.addEventListener('change', (e) => {
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    });
-
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-          video.style.display = 'block';
-          video.srcObject = stream;
-        });
+<script>
+    function displayImage(url) {
+        const imagePreview = document.getElementById("imagePreview");
+        imagePreview.src = url;
+        imagePreview.style.display = "block";
     }
 
-    function captureFromCamera() {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    function addDownloadButton(url, filename) {
+        const downloadBtnContainer = document.getElementById("downloadBtnContainer");
+        const downloadBtn = document.createElement("a");
+        downloadBtn.href = url;
+        downloadBtn.download = filename;
+        downloadBtn.innerText = "Download " + filename;
+        downloadBtn.style.display = "block";
+        downloadBtn.style.marginTop = "10px";
+        downloadBtnContainer.innerHTML = "";
+        downloadBtnContainer.appendChild(downloadBtn);
     }
 
-    function applyEffect(type) {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d = imgData.data;
-      for (let i = 0; i < d.length; i += 4) {
-        let r = d[i], g = d[i + 1], b = d[i + 2];
-
-        switch (type) {
-          case 'enhance': d[i] = r * 1.1; d[i + 1] = g * 1.1; d[i + 2] = b * 1.1; break;
-          case 'bw': let avg = (r + g + b) / 3; d[i] = d[i + 1] = d[i + 2] = avg; break;
-          case 'red': let gray = (r + g + b) / 3; d[i] = gray; d[i + 1] = d[i + 2] = 0; break;
-          case 'teal': d[i] = r * 1.1; d[i + 1] = g * 0.9; d[i + 2] = b * 1.2; break;
-          case 'moody': d[i] *= 0.7; d[i + 1] *= 1.1; d[i + 2] *= 0.7; break;
-          case 'sepia': let s = 0.3 * r + 0.59 * g + 0.11 * b; d[i] = s * 1.07; d[i + 1] = s * 0.74; d[i + 2] = s * 0.43; break;
-          case 'noir': let contrast = (r + g + b) / 3 > 128 ? 255 : 0; d[i] = d[i + 1] = d[i + 2] = contrast; break;
-          case 'warm': d[i] += 30; d[i + 1] += 15; break;
-          case 'cyberpunk': d[i] = b; d[i + 1] = r; d[i + 2] = g; break;
+    async function removeBg() {
+        const fileInput = document.getElementById("photoUpload");
+        if (!fileInput.files.length) {
+            alert("Please upload a photo first.");
+            return;
         }
-      }
-      ctx.putImageData(imgData, 0, 0);
-    }
+        const formData = new FormData();
+        formData.append("image_file", fileInput.files[0]);
+        formData.append("size", "auto");
 
-    function removeBackground() {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d = imgData.data;
-      for (let i = 0; i < d.length; i += 4) {
-        if (d[i] > 240 && d[i + 1] > 240 && d[i + 2] > 240) {
-          d[i + 3] = 0; // Make near-white pixels transparent
+        try {
+            const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+                method: "POST",
+                headers: { "X-Api-Key": "24Lc9RTfcMEXPx1Y7MU89afF" }, // Replace with your API key
+                body: formData
+            });
+
+            if (!response.ok) {
+                alert("Error removing background.");
+                return;
+            }
+
+            const blob = await response.blob();
+
+            // Convert to JPEG by drawing to a canvas
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                const jpegUrl = canvas.toDataURL("image/jpeg", 1.0); // Full quality JPEG
+                displayImage(jpegUrl);
+                addDownloadButton(jpegUrl, "removed_bg.jpg");
+            };
+            img.src = URL.createObjectURL(blob);
+
+        } catch (error) {
+            alert("Unexpected error: " + error.message);
         }
-      }
-      ctx.putImageData(imgData, 0, 0);
     }
 
-    function resizeImage() {
-      const w = parseInt(document.getElementById("resizeWidth").value);
-      const h = parseInt(document.getElementById("resizeHeight").value);
-      if (!w || !h) return alert("Enter both width and height");
-
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = w;
-      tempCanvas.height = h;
-      tempCanvas.getContext('2d').drawImage(canvas, 0, 0, w, h);
-      canvas.width = w;
-      canvas.height = h;
-      ctx.drawImage(tempCanvas, 0, 0);
+    function enhanceImage() {
+        // Implement cinematic effect (example)
+        alert("Enhance functionality to be added.");
     }
 
-    function downloadImage() {
-      const format = document.getElementById('formatSelect').value;
-      const link = document.createElement('a');
-      link.download = `fitpix_output.${format.split('/')[1]}`;
-      link.href = canvas.toDataURL(format);
-      link.click();
+    function applyB&W() {
+        const img = document.getElementById("imagePreview");
+        if (!img.src) {
+            alert("Please upload an image first.");
+            return;
+        }
+        img.style.filter = "grayscale(100%)";
     }
-  </script>
+
+    function applyRedGrayscale() {
+        const img = document.getElementById("imagePreview");
+        if (!img.src) {
+            alert("Please upload an image first.");
+            return;
+        }
+        img.style.filter = "grayscale(100%) sepia(100%)";
+    }
+
+    function applyResize() {
+        const width = document.getElementById("widthInput").value;
+        const height = document.getElementById("heightInput").value;
+        
+        const img = document.getElementById("imagePreview");
+        if (img.src && width && height) {
+            img.width = width;
+            img.height = height;
+            addDownloadButton(img.src, "resized_image.jpg");
+        } else {
+            alert("Please upload an image and provide valid dimensions.");
+        }
+    }
+</script>
+
 </body>
 </html>
