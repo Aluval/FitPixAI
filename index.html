@@ -1,135 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitPix AI</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #ff758c, #ff7eb3);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            overflow: hidden;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .list-group-item {
-            transition: all 0.4s ease;
-        }
-        .list-group-item:hover {
-            background: linear-gradient(90deg, #ff758c, #ff7eb3);
-            color: white;
-            transform: scale(1.05);
-        }
-        .bubbles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-        .bubble {
-            position: absolute;
-            bottom: -50px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: rise 10s infinite ease-in;
-        }
-        @keyframes rise {
-            0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
-        }
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -250px;
-            width: 250px;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            transition: left 0.4s ease;
-        }
-        .sidebar.open {
-            left: 0;
-        }
-        .sidebar .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .menu-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FitPix AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      overflow: hidden;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .list-group-item {
+      transition: all 0.4s ease;
+    }
+    .list-group-item:hover {
+      background: linear-gradient(90deg, #ff758c, #ff7eb3);
+      color: white;
+      transform: scale(1.05);
+    }
+    .bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -50px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: rise 10s infinite ease-in;
+    }
+    @keyframes rise {
+      0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+    }
+    .menu-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: white;
+      z-index: 3;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 20px;
+      transition: left 0.4s ease;
+      z-index: 4;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body class="text-center">
-    <div class="bubbles"></div>
-    <div class="menu-btn" onclick="toggleSidebar()">&#x22EE;</div>
-    <div class="sidebar" id="sidebar">
-        <div class="close-btn" onclick="toggleSidebar()">&#x2716;</div>
-        <h3>Menu</h3>
-        <ul class="list-unstyled">
-            <li><a href="https://t.me/Sunrises24Botupdates" class="text-white">Updates</a></li>
-            <li><a href="https://t.me/Sunrises24BotSupport" class="text-white">Support</a></li>
-        </ul>
+  <div class="bubbles"></div>
+
+  <div class="menu-btn" onclick="toggleSidebar()">&#x2630;</div>
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleSidebar()">&#x2716;</div>
+    <h4 class="mt-4">Menu</h4>
+    <ul class="list-unstyled">
+      <li><a href="https://t.me/Sunrises24Botupdates" class="text-white">Updates</a></li>
+      <li><a href="https://t.me/Sunrises24BotSupport" class="text-white">Support</a></li>
+    </ul>
+  </div>
+
+  <div class="container mt-5">
+    <h1 class="text-light fade-in">FitPix AI</h1>
+    <div class="list-group mt-4 fade-in">
+      <a href="bmi.html" class="list-group-item list-group-item-action">BMI Calculator</a>
+      <a href="phototools.html" class="list-group-item list-group-item-action">Photo Enhancer & Tools</a>
     </div>
-    <div class="container mt-5">
-        <h1 class="text-primary fade-in">FitPix AI</h1>
-        <div class="list-group mt-4 fade-in">
-            <a href="bmi.html" class="list-group-item list-group-item-action">BMI Calculator</a>
-            <a href="phototools.html" class="list-group-item list-group-item-action">Photo Enhancer & Tools</a>
-        </div>
-        <footer>
-            <p>Contact: <a href="mailto:sunrisesharsha467@gmail.com">sunrisesharsha467@gmail.com</a></p>
-            <p>© Sunrises Harsha | Telegram: <a href="https://t.me/Sunrises24Botupdates">𝗦ᴜɴʀɪ𝘀ᴇ𝘀 𝗛ᴀʀ𝘀ʜᴀ 𝟸𝟺</a></p>
-        </footer>
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(() => {
-                document.querySelectorAll(".fade-in").forEach(el => el.classList.add("show"));
-            }, 300);
-            const bubbleContainer = document.querySelector(".bubbles");
-            for (let i = 0; i < 15; i++) {
-                let bubble = document.createElement("div");
-                bubble.classList.add("bubble");
-                let size = Math.random() * 50 + 10 + "px";
-                bubble.style.width = size;
-                bubble.style.height = size;
-                bubble.style.left = Math.random() * 100 + "%";
-                bubble.style.animationDuration = Math.random() * 5 + 5 + "s";
-                bubbleContainer.appendChild(bubble);
-            }
-        });
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("open");
-        }
-    </script>
+    <footer class="mt-5 text-white small">
+      <p>Contact: <a href="mailto:sunrisesharsha467@gmail.com" class="text-white">sunrisesharsha467@gmail.com</a></p>
+      <p>© Sunrises Harsha | Telegram: <a href="https://t.me/Sunrises24Botupdates" class="text-white">𝗦ᴜɴʀɪ𝘀ᴇ𝘀 𝗛ᴀʀ𝘀ʜᴀ 𝟸𝟺</a></p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      setTimeout(() => {
+        document.querySelectorAll(".fade-in").forEach(el => el.classList.add("show"));
+      }, 300);
+
+      const bubbleContainer = document.querySelector(".bubbles");
+      for (let i = 0; i < 15; i++) {
+        let bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+        let size = Math.random() * 50 + 10 + "px";
+        bubble.style.width = size;
+        bubble.style.height = size;
+        bubble.style.left = Math.random() * 100 + "%";
+        bubble.style.animationDuration = Math.random() * 5 + 5 + "s";
+        bubbleContainer.appendChild(bubble);
+      }
+    });
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+    }
+  </script>
 </body>
 </html>
